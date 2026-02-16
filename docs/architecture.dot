@@ -1,0 +1,102 @@
+digraph EngineeringTeamArchitecture {
+  graph [
+    rankdir=LR,
+    bgcolor="white",
+    pad="0.35",
+    nodesep="0.60",
+    ranksep="0.90",
+    fontname="Helvetica"
+  ];
+
+  node [
+    shape=box,
+    style="rounded,filled",
+    fontname="Helvetica",
+    fontsize=12,
+    penwidth=1.3
+  ];
+
+  edge [
+    color="#475569",
+    penwidth=1.3,
+    arrowsize=0.8,
+    fontname="Helvetica",
+    fontsize=10
+  ];
+
+  subgraph cluster_runtime {
+    label="Runtime Orchestration";
+    labelloc="t";
+    color="#93C5FD";
+    fillcolor="#EFF6FF";
+    style="rounded,filled";
+    penwidth=1.6;
+
+    A [label="CLI Entrypoint\nsrc/engineering_team/main.py", fillcolor="#0F172A", color="#0F172A", fontcolor="white"];
+    B [label="Input Payload\nrequirements | module_name | class_name", fillcolor="#1E293B", color="#1E293B", fontcolor="white"];
+    C [label="Crew Builder\nEngineeringTeam().crew()", fillcolor="#0B3B5A", color="#0B3B5A", fontcolor="white"];
+    D [label="Execution Mode\nProcess.sequential", fillcolor="#075985", color="#075985", fontcolor="white"];
+
+    A -> B -> C -> D;
+  }
+
+  subgraph cluster_pipeline {
+    label="Agent + Task Pipeline";
+    labelloc="t";
+    color="#86EFAC";
+    fillcolor="#F0FDF4";
+    style="rounded,filled";
+    penwidth=1.6;
+
+    T1 [label="design_task\nAgent: engineering_lead", fillcolor="#14532D", color="#14532D", fontcolor="white"];
+    T2 [label="code_task\nAgent: backend_engineer", fillcolor="#166534", color="#166534", fontcolor="white"];
+    T3 [label="frontend_task\nAgent: frontend_engineer", fillcolor="#15803D", color="#15803D", fontcolor="white"];
+    T4 [label="test_task\nAgent: test_engineer", fillcolor="#15803D", color="#15803D", fontcolor="white"];
+
+    O1 [label="output/{module_name}_design.md", fillcolor="#92400E", color="#92400E", fontcolor="white"];
+    O2 [label="output/{module_name}", fillcolor="#A16207", color="#A16207", fontcolor="white"];
+    O3 [label="output/app.py", fillcolor="#B45309", color="#B45309", fontcolor="white"];
+    O4 [label="output/test_{module_name}", fillcolor="#B45309", color="#B45309", fontcolor="white"];
+
+    T1 -> O1;
+    T2 -> O2;
+    T3 -> O3;
+    T4 -> O4;
+
+    T1 -> T2;
+    T2 -> T3;
+    T2 -> T4;
+  }
+
+  subgraph cluster_config {
+    label="Configuration Sources";
+    labelloc="t";
+    color="#A5B4FC";
+    fillcolor="#EEF2FF";
+    style="rounded,filled";
+    penwidth=1.6;
+
+    CfgA [label="src/engineering_team/config/agents.yaml", fillcolor="#4338CA", color="#4338CA", fontcolor="white"];
+    CfgT [label="src/engineering_team/config/tasks.yaml", fillcolor="#4F46E5", color="#4F46E5", fontcolor="white"];
+  }
+
+  subgraph cluster_infra {
+    label="Execution Infrastructure";
+    labelloc="t";
+    color="#CBD5E1";
+    fillcolor="#F8FAFC";
+    style="rounded,filled";
+    penwidth=1.6;
+
+    I1 [label="LLM Providers\nOpenAI | Anthropic | Others", fillcolor="#334155", color="#334155", fontcolor="white"];
+    I2 [label="Safe Code Execution\nDocker Sandbox", fillcolor="#334155", color="#334155", fontcolor="white"];
+  }
+
+  D -> T1;
+  CfgA -> C;
+  CfgT -> C;
+
+  C -> I1 [style=dashed, label="model selection", fontcolor="#334155", color="#64748B"];
+  T2 -> I2 [style=dashed, label="code execution", fontcolor="#334155", color="#64748B"];
+  T4 -> I2 [style=dashed, label="test execution", fontcolor="#334155", color="#64748B"];
+}

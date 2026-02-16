@@ -34,6 +34,65 @@ Task and agent behavior is configured in:
 - `src/engineering_team/config/agents.yaml`
 - `src/engineering_team/config/tasks.yaml`
 
+## Architecture Diagram
+
+![Engineering Team Architecture](docs/architecture.png)
+
+```mermaid
+flowchart TB
+    classDef entry fill:#0f172a,color:#f8fafc,stroke:#1e293b,stroke-width:1.5px;
+    classDef orchestrator fill:#0b3b5a,color:#eff6ff,stroke:#075985,stroke-width:1.5px;
+    classDef task fill:#14532d,color:#f0fdf4,stroke:#166534,stroke-width:1.5px;
+    classDef output fill:#78350f,color:#fffbeb,stroke:#92400e,stroke-width:1.5px;
+    classDef config fill:#312e81,color:#eef2ff,stroke:#3730a3,stroke-width:1.5px;
+    classDef infra fill:#334155,color:#f8fafc,stroke:#475569,stroke-width:1.5px,stroke-dasharray: 4 3;
+
+    subgraph Runtime["Runtime Orchestration"]
+        A["CLI Entrypoint<br/>`src/engineering_team/main.py`"]:::entry
+        B["Input Payload<br/>`requirements`, `module_name`, `class_name`"]:::entry
+        C["Crew Builder<br/>`EngineeringTeam().crew()`"]:::orchestrator
+        D["Execution Mode<br/>`Process.sequential`"]:::orchestrator
+        A --> B --> C --> D
+    end
+
+    subgraph Pipeline["Agent + Task Pipeline"]
+        T1["`design_task`<br/>Agent: `engineering_lead`"]:::task
+        T2["`code_task`<br/>Agent: `backend_engineer`"]:::task
+        T3["`frontend_task`<br/>Agent: `frontend_engineer`"]:::task
+        T4["`test_task`<br/>Agent: `test_engineer`"]:::task
+
+        O1["`output/{module_name}_design.md`"]:::output
+        O2["`output/{module_name}`"]:::output
+        O3["`output/app.py`"]:::output
+        O4["`output/test_{module_name}`"]:::output
+
+        D --> T1
+        T1 --> O1
+        T1 --> T2
+        T2 --> O2
+        T2 --> T3
+        T2 --> T4
+        T3 --> O3
+        T4 --> O4
+    end
+
+    subgraph Configuration["Configuration Sources"]
+        CfgA["`src/engineering_team/config/agents.yaml`"]:::config
+        CfgT["`src/engineering_team/config/tasks.yaml`"]:::config
+        CfgA --> C
+        CfgT --> C
+    end
+
+    subgraph Infrastructure["Execution Infrastructure"]
+        I1["LLM Providers<br/>OpenAI, Anthropic, others"]:::infra
+        I2["Safe Code Execution<br/>Docker sandbox"]:::infra
+    end
+
+    C -. model selection .-> I1
+    T2 -. safe code execution .-> I2
+    T4 -. safe code execution .-> I2
+```
+
 ## Repository Structure
 
 ```text
