@@ -7,8 +7,7 @@ from datetime import datetime
 from engineering_team.crew import EngineeringTeam
 
 warnings.filterwarnings("ignore", category=SyntaxWarning, module="pysbd")
-
-# Create output directory if it doesn't exist
+# Create output directory if it does not exist 
 os.makedirs('output', exist_ok=True)
 
 requirements = """
