@@ -19,6 +19,8 @@ The workflow is designed to simulate an engineering team:
 - **Test Engineer**: writes unit tests for the backend.
 
 Artifacts are written to the `output/` directory.
+<img width="1920" height="917" alt="image" src="https://github.com/user-attachments/assets/2d3d15f6-53c4-4a2e-9f0a-c75cdba03081" />
+
 
 ## How It Works
 
